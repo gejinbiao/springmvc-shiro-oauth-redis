@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gjb.shiroTest.dao.ClientDao">
+
+    <resultMap id="clientResult" type="com.gjb.shiroTest.entity.Client">
+        <id property="id" column="id" />
+        <result property="clientName" column="client_name" />
+        <result property="clientId" column="client_id" />
+        <result property="clientSecret" column="client_secret" />
+    </resultMap>
+
+    <sql id="clientColumns">
+        a.id AS "id",
+        a.client_name AS "clientName",
+        a.client_id AS "clientId",
+        a.client_secret AS "clientSecret"
+    </sql>
+
+    <select id="findAll" resultMap="clientResult">
+        select <include refid="clientColumns" /> FROM oauth2_client a
+    </select>
+
+    <select id="findBySecret" resultMap="clientResult">
+        select <include refid="clientColumns" /> FROM oauth2_client a where client_secret = #{clientSecret}
+    </select>
+
+    <insert id="save" parameterType="com.gjb.shiroTest.entity.Client">
+        <selectKey keyProperty="id" resultType="String" order="BEFORE">
+            SELECT UUID()
+        </selectKey>
+        INSERT  INTO  oauth2_client(
+          id,client_name,client_id,client_secret
+        )
+        VALUE(
+        #{id},
+          #{clientName},
+          #{clientId},
+          #{clientSecret}
+        )
+    </insert>
+
+    <delete id="delete" parameterType="com.gjb.shiroTest.entity.Client">
+        delete from oauth2_client where id = #{id}
+    </delete>
+
+    <select id="findById" resultMap="clientResult" >
+        select <include refid="clientColumns" /> FROM oauth2_client a where id = #{id}
+    </select>
+
+    <select id="findByClientId" resultMap="clientResult" parameterType="com.gjb.shiroTest.entity.Client">
+        select <include refid="clientColumns" /> FROM oauth2_client a where client_id = #{clientId}
+    </select>
+</mapper>
